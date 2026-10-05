@@ -327,7 +327,17 @@ function WeekForm({ onSave }) {
     side_note: '',
     stopped: false,
     changes: ['none'],
+    doses_planned: '',
+    doses_taken: '',
+    severity: '',
+    protein_g: '',
+    sleep_hours: '',
+    lab_name: '',
+    lab_value: '',
+    vendor: '',
+    lot: '',
   })
+  const [advanced, setAdvanced] = useState(false)
 
   function toggle(list, key, value) {
     const has = form[list].includes(value)
@@ -394,6 +404,40 @@ function WeekForm({ onSave }) {
           ))}
         </div>
       </Field>
+      <button type="button" className="ghost" onClick={() => setAdvanced((v) => !v)}>
+        {advanced ? 'Hide extra fields' : 'Add extra fields'}
+      </button>
+      {advanced && (
+        <div className="grid-2">
+          <Field label="Doses planned">
+            <input value={form.doses_planned} onChange={(e) => setForm({ ...form, doses_planned: e.target.value })} placeholder="7" />
+          </Field>
+          <Field label="Doses taken">
+            <input value={form.doses_taken} onChange={(e) => setForm({ ...form, doses_taken: e.target.value })} placeholder="6" />
+          </Field>
+          <Field label="Worst side effect (0 none, 3 stopped you)">
+            <input value={form.severity} onChange={(e) => setForm({ ...form, severity: e.target.value })} placeholder="0–3" />
+          </Field>
+          <Field label="Protein, grams per day">
+            <input value={form.protein_g} onChange={(e) => setForm({ ...form, protein_g: e.target.value })} placeholder="150" />
+          </Field>
+          <Field label="Sleep, hours">
+            <input value={form.sleep_hours} onChange={(e) => setForm({ ...form, sleep_hours: e.target.value })} placeholder="7" />
+          </Field>
+          <Field label="Lab number, if you had one">
+            <input value={form.lab_value} onChange={(e) => setForm({ ...form, lab_value: e.target.value })} placeholder="Fasting glucose 92" />
+          </Field>
+          <Field label="Lab or kit name">
+            <input value={form.lab_name} onChange={(e) => setForm({ ...form, lab_name: e.target.value })} placeholder="Draw site or home kit" />
+          </Field>
+          <Field label="Vendor">
+            <input value={form.vendor} onChange={(e) => setForm({ ...form, vendor: e.target.value })} />
+          </Field>
+          <Field label="Lot or batch">
+            <input value={form.lot} onChange={(e) => setForm({ ...form, lot: e.target.value })} />
+          </Field>
+        </div>
+      )}
       <button type="submit">Save week</button>
     </form>
   )
@@ -536,6 +580,15 @@ function MineView({ rows, weeks }) {
               {w.stopped ? ' · stopped early' : ''}
             </p>
             <p className="muted">Other changes: {(w.changes || []).join(', ') || 'none tagged'}</p>
+            {(w.doses_taken || w.protein_g || w.lab_value || w.lot) && (
+              <p className="muted">
+                {w.doses_taken ? `Taken ${w.doses_taken}/${w.doses_planned || '?'} · ` : ''}
+                {w.protein_g ? `Protein ${w.protein_g} g · ` : ''}
+                {w.sleep_hours ? `Sleep ${w.sleep_hours} h · ` : ''}
+                {w.lab_value ? `Lab ${w.lab_value} · ` : ''}
+                {w.lot ? `Lot ${w.lot}` : ''}
+              </p>
+            )}
           </article>
         ))}
       </div>
